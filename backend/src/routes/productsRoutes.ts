@@ -1,8 +1,10 @@
+import multer from "multer";
 import { Router } from "express";
 import { productsController } from "../controller";
 
+const multerConfig = multer();
 const productsRoutes = Router();
 
-productsRoutes.get("/", productsController.getFileCSV);
+productsRoutes.post("/", multerConfig.single("file"), productsController.getFileCSV);
 
 export { productsRoutes };
