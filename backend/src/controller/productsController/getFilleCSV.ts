@@ -7,7 +7,7 @@ export const getFileCSV = async (
 ): Promise<Response> => {
 
   try {
-    return res.status(200).json(RETURNED_API_SUCCESS({ data:[], messageSuccess: "TEST OK" }));
+    return res.status(200).json(RETURNED_API_SUCCESS({ data: [], messageSuccess: "TEST OK" }));
 
   } catch (error) {
     return res.status(500).json(RETURNED_API_ERRORS_500());
