@@ -17,13 +17,13 @@ interface IReturnedRequestErrorProps {
 
 interface IReturnedRequestFileResultProps {
   isError: boolean;
-  messageError: string;
+  messageError: string[];
   data: IProductsFileReturned;
 }
 
 interface IReturnedRequestFileResult {
   isError: boolean;
-  error: string;
+  error: string[];
   data: {
     code: number;
     name: string;

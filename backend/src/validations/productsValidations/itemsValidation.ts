@@ -10,9 +10,10 @@ export const itemsValidation = async (items: IProductsFile[]): Promise<IReturned
 
     for await (const item of items) {
       const product = await Product.findOne({ where: { code: item.code } });
-
+      const msgError: string[] = [];
       // Valida se o Código Existe
       if(!product) {
+        msgError.push("Codigo não cadastrado.");
         returnResult.push(RETURNED_FILE_RESULT({ 
           data: {
             code: item.code,
@@ -21,7 +22,7 @@ export const itemsValidation = async (items: IProductsFile[]): Promise<IReturned
             new_price: item.newPrice
           },
           isError: true,
-          messageError: "Codigo não cadastrado."
+          messageError: msgError
         })); 
       } else {
         let isErrorRegister = false;
@@ -30,6 +31,7 @@ export const itemsValidation = async (items: IProductsFile[]): Promise<IReturned
         const valueMax = calculatePercentMoreValue({ percent: 10, valueCurrent: product.sales_price });
         if(item.newPrice > valueMax) {
           isErrorRegister = true;
+          msgError.push("Novo valor superior a 10%.");
           returnResult.push(RETURNED_FILE_RESULT({ 
             data: {
               code: product.code,
@@ -38,7 +40,7 @@ export const itemsValidation = async (items: IProductsFile[]): Promise<IReturned
               new_price: Number(item.newPrice)
             },
             isError: true,
-            messageError: "Novo valor superior a 10%."
+            messageError: msgError
           }));
           continue;
         }
@@ -47,6 +49,7 @@ export const itemsValidation = async (items: IProductsFile[]): Promise<IReturned
         const valueMin = calculatePercentLessValue({ percent: 10, valueCurrent: product!.sales_price });
         if(item.newPrice < valueMin) {
           isErrorRegister = true;
+          msgError.push("Novo valor inferior a 10%.");
           returnResult.push(RETURNED_FILE_RESULT({ 
             data: {
               code: product.code,
@@ -55,7 +58,7 @@ export const itemsValidation = async (items: IProductsFile[]): Promise<IReturned
               new_price: Number(item.newPrice)
             },
             isError: true,
-            messageError: "Novo valor inferior a 10%."
+            messageError: msgError
           }));
           continue;
         }
@@ -63,6 +66,7 @@ export const itemsValidation = async (items: IProductsFile[]): Promise<IReturned
         // Valida preço de custo dos ITEMS
         if(product.cost_price >= item.newPrice) {
           isErrorRegister = true;
+          msgError.push("Novo valor maior que o preço de custo.");
           returnResult.push(RETURNED_FILE_RESULT({ 
             data: {
               code: product.code,
@@ -71,7 +75,7 @@ export const itemsValidation = async (items: IProductsFile[]): Promise<IReturned
               new_price: Number(item.newPrice)
             },
             isError: true,
-            messageError: "Novo valor maior que o preço de custo."
+            messageError: msgError
           })); 
           continue;
         }
@@ -91,6 +95,8 @@ export const itemsValidation = async (items: IProductsFile[]): Promise<IReturned
           });
             
           if(!itemComponent.length) {
+            isErrorRegister = true;
+            msgError.push("Item que compeõe o paco não consta no arquivo enviado.");
             returnResult.push(RETURNED_FILE_RESULT({ 
               data: {
                 code: product.code,
@@ -99,7 +105,7 @@ export const itemsValidation = async (items: IProductsFile[]): Promise<IReturned
                 new_price: Number(item.newPrice)
               },
               isError: true,
-              messageError: "Item que compeõe o paco não consta no arquivo enviado.",
+              messageError: msgError,
             })); 
             continue;
           }
@@ -117,6 +123,8 @@ export const itemsValidation = async (items: IProductsFile[]): Promise<IReturned
           });
           
           if(totalpackValue !== item.newPrice) {
+            isErrorRegister = true;
+            msgError.push("A soma dos itens do pacote não são iguai ao valor total do pacote.");
             returnResult.push(RETURNED_FILE_RESULT({ 
               data: {
                 code: product.code,
@@ -125,13 +133,14 @@ export const itemsValidation = async (items: IProductsFile[]): Promise<IReturned
                 new_price: Number(item.newPrice)
               },
               isError: true,
-              messageError: "A soma dos itens do pacote não são iguai ao valor total do pacote.",
+              messageError: msgError,
             })); 
             continue;
           }
         }
 
         if(!isErrorRegister) {
+          msgError.push("");
           returnResult.push(RETURNED_FILE_RESULT({ 
             data: {
               code: product.code,
@@ -139,8 +148,8 @@ export const itemsValidation = async (items: IProductsFile[]): Promise<IReturned
               sales_price: Number(product.sales_price),
               new_price: Number(item.newPrice)
             },
-            isError: false,
-            messageError: ""
+            isError: !msgError.length,
+            messageError: msgError
           })); 
         }
       } 
