@@ -77,25 +77,20 @@ export const itemsValidation = async (items: IProductsFile[]): Promise<IReturned
         }
 
         // Valida pack
-        let messageError = "";
         let totalpackValue = 0;
-        const packItem = await Pack.findAll({ where: { pack_id: item.code }});
+        const packItem = await Pack.findAll({ where: { pack_id: item.code }, include: { as: "product", model: Product }});
 
         if(packItem.length) {
-          packItem.map(pack => {
-            if(messageError !== "") {
-              return;
-            }
 
-            const itemComponent = items.find(itemComponent => itemComponent.code === pack.product_id);
-            if(!itemComponent) {
-              messageError = `Item '${product.name}' não consta no arquivo enviado.`;
-            } else {
-              totalpackValue = Number((totalpackValue + (pack.qty * itemComponent.newPrice)).toFixed(2));
+          const itemComponent: IProductsFile[] = [];
+          packItem.map(pack => {
+            const item = items.find(itemComponent => itemComponent.code === pack.product_id);
+            if(item) {
+              itemComponent.push(item);
             }
           });
-
-          if(messageError !== "") {
+            
+          if(!itemComponent.length) {
             returnResult.push(RETURNED_FILE_RESULT({ 
               data: {
                 code: product.code,
@@ -104,10 +99,22 @@ export const itemsValidation = async (items: IProductsFile[]): Promise<IReturned
                 new_price: Number(item.newPrice)
               },
               isError: true,
-              messageError,
+              messageError: "Item que compeõe o paco não consta no arquivo enviado.",
             })); 
             continue;
           }
+
+          // CALCULA OS VALORES DO PACOTE
+          const itemsNoFile = packItem.filter(pack => !itemComponent.some(item => item.code === pack.product_id) );
+          itemsNoFile.map(item => totalpackValue = totalpackValue + (Number(item.product?.sales_price) * item.qty) );
+          
+          itemComponent.map(item => {
+            packItem.map(pack => {
+              if(pack.product_id === item.code) {
+                totalpackValue = totalpackValue + (item.newPrice * pack.qty);
+              }
+            });
+          });
           
           if(totalpackValue !== item.newPrice) {
             returnResult.push(RETURNED_FILE_RESULT({ 
@@ -142,6 +149,7 @@ export const itemsValidation = async (items: IProductsFile[]): Promise<IReturned
     return returnResult;
 
   } catch (error: any) {
+    console.log(error);
     throw Error(error);
   }
 };
