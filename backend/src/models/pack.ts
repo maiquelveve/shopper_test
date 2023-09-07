@@ -4,17 +4,18 @@ import {
   InferAttributes, 
   InferCreationAttributes, 
   CreationOptional, 
-  ForeignKey
+  ForeignKey,
 } from "sequelize";
 
 import { connectionSql } from "../database/connectionSql";
-import product from "./product";
+import Product from "./Product";
 
-class Pack extends Model<InferAttributes<Pack>, InferCreationAttributes<Pack>> { 
+class Pack extends Model<InferAttributes<Pack>, InferCreationAttributes<Pack>> {
+  declare product?: InferAttributes<Product>;
   declare id: CreationOptional<number>;
   declare qty: number;
-  declare product_id: ForeignKey<product["code"]>;
-  declare pack_id: ForeignKey<product["code"]>;
+  declare product_id: ForeignKey<Product["code"]>;
+  declare pack_id: ForeignKey<Product["code"]>;
 }
     
 Pack.init(
@@ -43,12 +44,12 @@ Pack.init(
   }
 );
 
-Pack.belongsTo(product, {
+Pack.belongsTo(Product, {
   foreignKey: "product_id",
   as: "product",
 });
 
-Pack.belongsTo(product, {
+Pack.belongsTo(Product, {
   foreignKey: "pack_id",
   as: "pack",
 });
