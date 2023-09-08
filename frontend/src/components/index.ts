@@ -5,3 +5,5 @@ export * from "./Logo";
 export * from "./AppBar";
 export * from "./UploadFile";
 export * from "./LoadingText";
+export * from "./Alerts";
+export * from "./LoadingSimple";

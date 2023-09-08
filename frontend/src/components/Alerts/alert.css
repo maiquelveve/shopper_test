@@ -1,0 +1,8 @@
+.title {
+  font-weight: lighter;
+  letter-spacing: 1.5px;
+}
+
+.background {
+  z-index: 99999;
+}

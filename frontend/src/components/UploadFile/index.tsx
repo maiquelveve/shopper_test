@@ -5,7 +5,7 @@ import { Backup, DownloadDone } from "@mui/icons-material/";
 export const UploadFile: React.FC<IUploadFileProps> = ({ handleValidateFile }) => {
  
   const { getInputProps, getRootProps, acceptedFiles, fileRejections } = useDropzone({ 
-    accept: { "image/*": [".jpeg", ".png", ".jpg"] },
+    accept: { "text/csv": [".csv"] },
     maxFiles: 1,
   });
 
@@ -13,6 +13,7 @@ export const UploadFile: React.FC<IUploadFileProps> = ({ handleValidateFile }) =
   const fileRejectionItems = fileRejections.map(({ errors }) => (errors))[0];
 
   const handleSaveFile = () => {
+    acceptedFiles.pop();
     handleValidateFile({ file: acceptedFileItems.file });
   };
 

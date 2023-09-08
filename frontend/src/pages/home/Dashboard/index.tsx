@@ -1,18 +1,84 @@
-import { Box, CardContent, Paper, Typography } from "@mui/material";
-
-import { CardComponent, LoadingText, Page, UploadFile } from "../../../components";
-import { TableProducts } from "./components";
 import { useCallback, useState } from "react";
+import { Box, CardContent, Paper, Typography, Button } from "@mui/material";
+import { SaveAs } from "@mui/icons-material";
+
+import { 
+  CardComponent, 
+  LoadingSimple, 
+  LoadingText, 
+  Page, 
+  UploadFile, 
+  catchDefalutAlert, 
+  defaultAlert 
+} from "../../../components";
+
+import { TableProducts } from "./components";
+import { apiService } from "../../../services";
 
 export const Dashboard = () => {
   const [loading, setLoading] = useState(false);
   const [dataFile, setDataFile] = useState<IReturnedRequestFileResultApi[]>([]);
+  const [fileWithoutError, setFileWithoutError] = useState(false);
 
   const handleValidateFile = useCallback(async ({ file }: { file: File}) => {
-    setLoading(true);
-    console.log(file);
-    setDataFile(dataFileMock);
-    setTimeout(() => setLoading(false), 3000);
+    try {
+      setLoading(true);
+      setDataFile([]);
+      
+      const data = new FormData();
+      data.append("file", file);
+      
+      const response = await apiService.post<IReturnedRequest>("/", data);
+      
+      if(response.data.isSuccess) {
+        setDataFile(response.data.data);
+        
+        let isErrorFile = false;
+        response.data.data.map(data => {
+          if (data.isError) {
+            isErrorFile = true;
+          }
+        });
+        
+        if(!isErrorFile) {
+          setFileWithoutError(true);
+          defaultAlert({ messages:["Validação ralizar com sucesso!"], type: "success", position: "top-end" });
+        } else {
+          defaultAlert({ messages: ["Existem algumas erros no arquivo escolhido"], type: "warning", position: "top-end" });
+        }
+        
+      } else {
+        defaultAlert({ messages: response.data.errors, type: "error", position: "top-end" });
+      }
+
+    } catch (error) {
+      catchDefalutAlert();
+    } finally {
+      setLoading(false);
+    }
+    
+  }, []);
+
+  const handleAtualizar = useCallback(async () => {
+    try {
+      setLoading(true);
+      
+      const response = await apiService.put<IReturnedRequest>("/", { data: dataFile });
+      
+      if(response.data.isSuccess) {
+        defaultAlert({ messages:["Validação realizar com sucesso!"], type: "success", position: "top-end" });
+      } else {
+        defaultAlert({ messages: response.data.errors, type: "error", position: "top-end" });
+      }
+
+    } catch (error) {
+      catchDefalutAlert();
+
+    } finally {
+      setLoading(false);
+      setFileWithoutError(false);
+      setDataFile([]);
+    }
   }, []);
 
   return (
@@ -31,7 +97,24 @@ export const Dashboard = () => {
               height={100}
               sx={{ borderRadius: 3}}
             >
-              <UploadFile handleValidateFile={handleValidateFile} />
+              {loading ? (
+                <Box display="flex" justifyContent="center" alignItems="center" flexDirection="column" height={120}>
+                  <LoadingSimple />
+                </Box>
+              ) :
+                !fileWithoutError ?
+                  <UploadFile handleValidateFile={handleValidateFile} />
+                  :
+                  <Button 
+                    onClick={handleAtualizar}
+                    size="large" 
+                    variant="contained" 
+                    startIcon={<SaveAs />} 
+                    sx={{ borderRadius: 3 }}
+                  >
+                    Salvar
+                  </Button>
+              }
             </Box>
             
             <Box sx={{ width: "100%" }} component={Paper} elevation={24} borderRadius={5}>
@@ -54,47 +137,3 @@ export const Dashboard = () => {
     </Page>
   );
 };
-
-
-const dataFileMock: IReturnedRequestFileResultApi[] = [
-  {
-    isError: true,
-    error: ["Maior que 10%", "valor do custo menor que o novo preço"],
-    data: {
-      code: 16,
-      name: "Bebida lactea",
-      sales_price: 5.56,
-      new_price: 5.60
-    }
-  },
-  {
-    isError: false,
-    error: [""],
-    data: {
-      code: 21,
-      name: "Bebida energetica",
-      sales_price: 15.56,
-      new_price: 15.60
-    }
-  },
-  {
-    isError: true,
-    error: ["Menor que 10%"],
-    data: {
-      code: 17,
-      name: "Bolacha",
-      sales_price: 2.56,
-      new_price: 2.60
-    }
-  },
-  {
-    isError: true,
-    error: ["Maior que 10%", "valor do custo menor que o novo preço", "Não contem os itens do pacote"],
-    data: {
-      code: 18,
-      name: "Kit de Bebida lactea com6 unidades",
-      sales_price: 35.56,
-      new_price: 35.60
-    }
-  },
-];

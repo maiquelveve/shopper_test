@@ -6,3 +6,7 @@ interface ILoadingText {
   color?: EnumColorLoading;
 }
 
+interface ILoadingSimple {
+  size?: number;
+  color?: EnumColorLoading;
+}
