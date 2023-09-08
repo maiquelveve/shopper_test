@@ -111,7 +111,7 @@ export const Dashboard = () => {
                     startIcon={<SaveAs />} 
                     sx={{ borderRadius: 3 }}
                   >
-                    Salvar
+                    ATUALIZAR
                   </Button>
               }
             </Box>
