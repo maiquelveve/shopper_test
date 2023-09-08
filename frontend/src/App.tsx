@@ -1,7 +1,16 @@
-import Button from "@mui/material/Button";
+import { BrowserRouter } from "react-router-dom";
+
+import AppRoutes from "./routes";
+import { LayoutProvider } from "./context";
 
 function App() {
-  return <Button variant="contained">Hello world</Button>;
+  return(
+    <BrowserRouter>
+      <LayoutProvider>
+        <AppRoutes />
+      </LayoutProvider>
+    </BrowserRouter>
+  );
 }
 
 export default App;
