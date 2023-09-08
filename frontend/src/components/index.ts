@@ -3,3 +3,5 @@ export * from "./Drawers";
 export * from "./MenusSidebar";
 export * from "./Logo";
 export * from "./AppBar";
+export * from "./UploadFile";
+export * from "./LoadingText";
