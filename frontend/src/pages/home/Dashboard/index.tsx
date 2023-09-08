@@ -1,39 +1,64 @@
-import { Typography } from "@mui/material";
+import { Box, CardContent } from "@mui/material";
 
 import { CardComponent, Page } from "../../../components";
+import { TableProducts } from "./components";
 
 export const Dashboard = () => {
   return (
     <Page>
-      <CardComponent>
-        <Typography paragraph>
-        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
-        tempor incididunt ut labore et dolore magna aliqua. Rhoncus dolor purus non
-        enim praesent elementum facilisis leo vel. Risus at ultrices mi tempus
-        imperdiet. Semper risus in hendrerit gravida rutrum quisque non tellus.
-        Convallis convallis tellus id interdum velit laoreet id donec ultrices.
-        Odio morbi quis commodo odio aenean sed adipiscing. Amet nisl suscipit
-        adipiscing bibendum est ultricies integer quis. Cursus euismod quis viverra
-        nibh cras. Metus vulputate eu scelerisque felis imperdiet proin fermentum
-        leo. Mauris commodo quis imperdiet massa tincidunt. Cras tincidunt lobortis
-        feugiat vivamus at augue. At augue eget arcu dictum varius duis at
-        consectetur lorem. Velit sed ullamcorper morbi tincidunt. Lorem donec massa
-        sapien faucibus et molestie ac.
-        </Typography>
-        <Typography paragraph>
-        Consequat mauris nunc congue nisi vitae suscipit. Fringilla est ullamcorper
-        eget nulla facilisi etiam dignissim diam. Pulvinar elementum integer enim
-        neque volutpat ac tincidunt. Ornare suspendisse sed nisi lacus sed viverra
-        tellus. Purus sit amet volutpat consequat mauris. Elementum eu facilisis
-        sed odio morbi. Euismod lacinia at quis risus sed vulputate odio. Morbi
-        tincidunt ornare massa eget egestas purus viverra accumsan in. In hendrerit
-        gravida rutrum quisque non tellus orci ac. Pellentesque nec nam aliquam sem
-        et tortor. Habitant morbi tristique senectus et. Adipiscing elit duis
-        tristique sollicitudin nibh sit. Ornare aenean euismod elementum nisi quis
-        eleifend. Commodo viverra maecenas accumsan lacus vel facilisis. Nulla
-        posuere sollicitudin aliquam ultrices sagittis orci a.
-        </Typography>
-      </CardComponent>
+      <Page title="Carregar Arquivo">
+        <CardComponent>
+          <CardContent>
+            <Box display="flex" justifyContent="center" alignItems="center" flexDirection="column">
+              <TableProducts dataFile={dataFileMock} />
+            </Box>
+          </CardContent>
+        </CardComponent>
+      </Page>
     </Page>
   );
 };
+
+
+const dataFileMock: IReturnedRequestFileResultApi[] = [
+  {
+    isError: true,
+    error: ["Maior que 10%", "valor do custo menor que o novo preço"],
+    data: {
+      code: 16,
+      name: "Bebida lactea",
+      sales_price: 5.56,
+      new_price: 5.60
+    }
+  },
+  {
+    isError: false,
+    error: [""],
+    data: {
+      code: 21,
+      name: "Bebida energetica",
+      sales_price: 15.56,
+      new_price: 15.60
+    }
+  },
+  {
+    isError: true,
+    error: ["Menor que 10%"],
+    data: {
+      code: 17,
+      name: "Bolacha",
+      sales_price: 2.56,
+      new_price: 2.60
+    }
+  },
+  {
+    isError: true,
+    error: ["Maior que 10%", "valor do custo menor que o novo preço", "Não contem os itens do pacote"],
+    data: {
+      code: 18,
+      name: "Kit de Bebida lactea com6 unidades",
+      sales_price: 35.56,
+      new_price: 35.60
+    }
+  },
+];
