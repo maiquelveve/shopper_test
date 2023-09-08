@@ -6,5 +6,6 @@ const multerConfig = multer();
 const productsRoutes = Router();
 
 productsRoutes.post("/", multerConfig.single("file"), productsController.getFileCSV);
+productsRoutes.put("/", productsController.updateFile);
 
 export { productsRoutes };

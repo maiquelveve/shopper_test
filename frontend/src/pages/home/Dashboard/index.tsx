@@ -59,11 +59,10 @@ export const Dashboard = () => {
     
   }, []);
 
-  const handleAtualizar = useCallback(async () => {
+  const handleAtualizar = useCallback(async (data: IReturnedRequestFileResultApi[]) => {
     try {
       setLoading(true);
-      
-      const response = await apiService.put<IReturnedRequest>("/", { data: dataFile });
+      const response = await apiService.put<IReturnedRequest>("/", { data });
       
       if(response.data.isSuccess) {
         defaultAlert({ messages:["Validação realizar com sucesso!"], type: "success", position: "top-end" });
@@ -106,7 +105,7 @@ export const Dashboard = () => {
                   <UploadFile handleValidateFile={handleValidateFile} />
                   :
                   <Button 
-                    onClick={handleAtualizar}
+                    onClick={() => handleAtualizar(dataFile)}
                     size="large" 
                     variant="contained" 
                     startIcon={<SaveAs />} 
