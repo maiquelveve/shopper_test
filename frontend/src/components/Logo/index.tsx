@@ -1,12 +1,10 @@
 /* eslint-disable indent */
-import { Box } from "@mui/material";
+import { Box, Typography } from "@mui/material";
 
-import removebgmain from "../../assets/removebg-main.png";
-
-export const Logo: React.FC<ILogo> = ({ width = 100, height = 50 }) => {
+export const Logo: React.FC = () => {
   return (
     <Box width="100%">
-      <img src={removebgmain} alt="logo" width={width} height={height} />
+      <Typography variant="subtitle2" fontSize={25}>SHOPPER TEST</Typography>
     </Box>
   );
 };
